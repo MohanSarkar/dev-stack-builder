@@ -13,9 +13,8 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${
-      isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
-    }`}>
+    <div className={`min-h-screen transition-colors duration-200 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+      }`}>
       <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 
       <main>
