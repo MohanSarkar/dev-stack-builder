@@ -8,12 +8,23 @@ interface TechGridProps {
 
 export default function TechGrid({ isDarkMode }: TechGridProps) {
   const [technologies, setTechnologies] = useState<Technology[]>([]);
-  const [selectedTechs, setSelectedTechs] = useState<Technology[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  
-  // Toast state for popup alert
+
+  // Load saved stack state from localStorage
+  const [selectedTechs, setSelectedTechs] = useState<Technology[]>(() => {
+    const savedStack = localStorage.getItem('myStack');
+    return savedStack ? JSON.parse(savedStack) : [];
+  });
+
+  // Toast notification state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Synchronize selected tech stack with localStorage
+  useEffect(() => {
+    localStorage.setItem('myStack', JSON.stringify(selectedTechs));
+  }, [selectedTechs]);
+
+  // Fetch technology data with a 1-second delay for smooth loading animation
   useEffect(() => {
     fetch('/data/technologies.json')
       .then((res) => {
@@ -22,7 +33,10 @@ export default function TechGrid({ isDarkMode }: TechGridProps) {
       })
       .then((data) => {
         setTechnologies(data);
-        setLoading(false);
+        // Artificial delay of 1000ms for loading state
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       })
       .catch((err) => {
         console.error('Data load error:', err);
@@ -30,7 +44,6 @@ export default function TechGrid({ isDarkMode }: TechGridProps) {
       });
   }, []);
 
-  // Handle stack item toggle & trigger toast message
   const handleToggleSelect = (tech: Technology) => {
     const isAlreadySelected = selectedTechs.some((item) => item.id === tech.id);
     
@@ -43,7 +56,6 @@ export default function TechGrid({ isDarkMode }: TechGridProps) {
     }
   };
 
-  // Toast message handler with auto-close after 3 seconds
   const showToast = (message: string) => {
     setToastMessage(message);
     setTimeout(() => {
@@ -55,16 +67,6 @@ export default function TechGrid({ isDarkMode }: TechGridProps) {
     setSelectedTechs([]);
     showToast('All technologies removed from your stack!');
   };
-
-  if (loading) {
-    return (
-      <div className="py-20 text-center font-semibold">
-        <p className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>
-          Loading Technologies...
-        </p>
-      </div>
-    );
-  }
 
   return (
     <section id="technologies" className="py-12 relative">
@@ -85,20 +87,48 @@ export default function TechGrid({ isDarkMode }: TechGridProps) {
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
           
-          {/* Main Tech Cards Grid */}
-          <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {technologies.map((tech) => (
-              <TechCard
-                key={tech.id}
-                tech={tech}
-                isDarkMode={isDarkMode}
-                isSelected={selectedTechs.some((item) => item.id === tech.id)}
-                onToggleSelect={handleToggleSelect}
-              />
-            ))}
+          {/* Main Grid or Loading Screen */}
+          <div className="lg:col-span-3">
+            {loading ? (
+              /* Custom Spinning Loader UI */
+              <div className={`flex flex-col items-center justify-center py-20 rounded-2xl border ${
+                isDarkMode ? 'bg-slate-900/40 border-slate-800' : 'bg-white/60 border-slate-100 shadow-sm'
+              }`}>
+                {/* Brand Styled Animated Spinner Logo */}
+                <div className="relative flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-full border-4 border-pink-500/20 border-t-pink-500 animate-spin"></div>
+                  <div className="absolute w-6 h-6 rounded-lg bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center text-white text-[10px] font-black">
+                    DS
+                  </div>
+                </div>
+
+                {/* Loading Text with Dot Animation */}
+                <p className={`text-sm font-semibold flex items-center space-x-1 ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                }`}>
+                  <span>Loading technologies</span>
+                  <span className="animate-bounce inline-block">.</span>
+                  <span className="animate-bounce inline-block [animation-delay:0.2s]">.</span>
+                  <span className="animate-bounce inline-block [animation-delay:0.4s]">.</span>
+                </p>
+              </div>
+            ) : (
+              /* Actual Technology Cards Grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                {technologies.map((tech) => (
+                  <TechCard
+                    key={tech.id}
+                    tech={tech}
+                    isDarkMode={isDarkMode}
+                    isSelected={selectedTechs.some((item) => item.id === tech.id)}
+                    onToggleSelect={handleToggleSelect}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Your Stack Panel */}
+          {/* Your Stack Sidebar */}
           <div className={`sticky top-24 p-5 rounded-2xl border transition-colors ${
             isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-100 shadow-sm'
           }`}>
@@ -109,7 +139,7 @@ export default function TechGrid({ isDarkMode }: TechGridProps) {
               {selectedTechs.length} {selectedTechs.length === 1 ? 'Technology' : 'Technologies'} Selected
             </p>
 
-            {/* Selected Stack List */}
+            {/* Selected Items */}
             <div className="mt-4 space-y-2.5">
               {selectedTechs.length === 0 ? (
                 <div className={`p-8 text-center rounded-xl border border-dashed ${
@@ -174,7 +204,7 @@ export default function TechGrid({ isDarkMode }: TechGridProps) {
 
       {/* Floating Bottom Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl shadow-xl animate-bounce-short">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl shadow-xl">
           <span className="flex items-center justify-center w-5 h-5 bg-emerald-500 text-white rounded-full text-xs font-bold">
             ✓
           </span>

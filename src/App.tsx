@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import TechGrid from './components/TechGrid';
+import Footer from './components/Footer';
 
 export default function App() {
   // Global theme state for dark/light mode toggle
@@ -18,12 +19,12 @@ export default function App() {
       <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 
       <main>
-        {/* Hero Section */}
         <Hero isDarkMode={isDarkMode} />
-        
-        {/* Technologies Grid & Your Stack Section */}
         <TechGrid isDarkMode={isDarkMode} />
       </main>
+
+      {/* Footer Section */}
+      <Footer isDarkMode={isDarkMode} />
     </div>
   );
 }
