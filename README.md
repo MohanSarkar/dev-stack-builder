@@ -102,3 +102,16 @@ When the user has not selected any technology, we conditionally render an empty 
 Ans.Parent to Child: The parent passes data as props down to the child component.
 
 Child to Parent: The parent passes a callback function as a prop to the child. The child calls that function and passes data back as an argument.
+
+
+***************************************************** Contact *****************************************************
+
+
+
+
+Let's Connect / Hire Me
+
+If you need a passionate Web Developer for your team or freelance project, feel free to reach out:
+
+Email: sarkarmohan789@gmail.com
+Phone / WhatsApp: +971562641526
