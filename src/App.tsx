@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import TechGrid from './components/TechGrid';
 
 export default function App() {
-  // Global Theme State
+  // Global theme state for dark/light mode toggle
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
-  // Toggle Theme Handler
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -15,12 +15,14 @@ export default function App() {
     <div className={`min-h-screen transition-colors duration-200 ${
       isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
     }`}>
-      {/* Sticky Header Navigation Component */}
       <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 
-      {/* Hero Banner Section */}
       <main>
+        {/* Hero Section */}
         <Hero isDarkMode={isDarkMode} />
+        
+        {/* Technologies Grid & Your Stack Section */}
+        <TechGrid isDarkMode={isDarkMode} />
       </main>
     </div>
   );
